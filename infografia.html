@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infografía: Crear Repositorio en Bitbucket</title>
+    <title>Infografía: Bitbucket y Git</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -33,18 +33,18 @@
         header {
             background: #0052cc;
             color: white;
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
         }
         
         header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
         }
         
         header p {
-            font-size: 1.2rem;
-            max-width: 700px;
+            font-size: 1.3rem;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -72,18 +72,18 @@
         .steps {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 40px;
             counter-reset: step-counter;
         }
         
         .step {
             display: flex;
             align-items: flex-start;
-            gap: 20px;
+            gap: 25px;
             background: #f4f5f7;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             position: relative;
             overflow: hidden;
         }
@@ -92,9 +92,9 @@
             counter-increment: step-counter;
             content: counter(step-counter);
             position: absolute;
-            top: -15px;
-            left: -15px;
-            font-size: 6rem;
+            top: -20px;
+            left: -20px;
+            font-size: 7rem;
             font-weight: bold;
             color: rgba(0, 82, 204, 0.1);
             z-index: 0;
@@ -102,15 +102,15 @@
         
         .step-icon {
             flex-shrink: 0;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: #0052cc;
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 2rem;
             z-index: 1;
         }
         
@@ -121,131 +121,149 @@
         
         .step-content h3 {
             color: #0052cc;
-            margin-bottom: 10px;
-            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
         }
         
         .step-content p {
             color: #42526e;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
         }
         
         .code {
             background: #253858;
             color: #f4f5f7;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 15px 0;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
             overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .code i {
+            color: #7a869a;
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .file-structure {
+            background: #deebff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
         }
         
-        .screenshot {
-            text-align: center;
-            margin: 20px 0;
-            border: 1px solid #dfe1e6;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
+        .file-structure div {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
         }
         
-        .screenshot img {
-            max-width: 100%;
-            height: auto;
-            display: block;
+        .file-structure div:before {
+            content: '📁';
+            position: absolute;
+            left: 0;
+        }
+        
+        .file-structure .file:before {
+            content: '📄';
         }
         
         .note {
             background: #deebff;
-            border-left: 4px solid #0052cc;
-            padding: 15px 20px;
+            border-left: 5px solid #0052cc;
+            padding: 20px;
             margin: 20px 0;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 8px 8px 0;
         }
         
         .warning {
             background: #ffebe6;
-            border-left: 4px solid #ff5630;
-            padding: 15px 20px;
+            border-left: 5px solid #ff5630;
+            padding: 20px;
             margin: 20px 0;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 8px 8px 0;
         }
         
         .success {
             background: #e3fcef;
-            border-left: 4px solid #36b37e;
-            padding: 15px 20px;
+            border-left: 5px solid #36b37e;
+            padding: 20px;
             margin: 20px 0;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 8px 8px 0;
         }
         
         footer {
             background-color: #0747a6;
             color: white;
             text-align: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
             margin-top: 40px;
         }
         
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 20px;
+            margin-top: 40px;
         }
         
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: #0052cc;
             color: white;
-            padding: 12px 24px;
-            border-radius: 5px;
+            padding: 15px 30px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 82, 204, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 82, 204, 0.4);
+            font-size: 1.1rem;
         }
         
         .btn:hover {
             background: #0747a6;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 82, 204, 0.6);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #0052cc;
-            color: #0052cc;
-        }
-        
-        .btn-outline:hover {
-            background: #0052cc;
-            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 82, 204, 0.6);
         }
         
         /* Responsive */
         @media (max-width: 768px) {
             header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .step {
                 flex-direction: column;
                 text-align: center;
+                padding: 20px;
             }
             
             .step-icon {
                 align-self: center;
+                width: 60px;
+                height: 60px;
+                font-size: 1.7rem;
             }
             
             .controls {
                 flex-direction: column;
                 align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -253,24 +271,24 @@
 <body>
     <div class="container">
         <header>
-            <h1>Crear un Repositorio en Bitbucket</h1>
-            <p>Guía paso a paso para crear tu primer repositorio y subir tu código</p>
+            <h1>Guía Completa: Bitbucket y Git</h1>
+            <p>Desde la creación del repositorio hasta subir tu proyecto</p>
         </header>
         
         <div class="info-content">
-            <h2 class="section-title">Proceso Completo</h2>
+            <h2 class="section-title">Proceso Paso a Paso</h2>
             
             <div class="steps">
                 <!-- Paso 1 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-sign-in-alt"></i>
+                        <i class="fas fa-user-plus"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Iniciar sesión en Bitbucket</h3>
-                        <p>Accede a tu cuenta en <a href="https://bitbucket.org" target="_blank">bitbucket.org</a>. Si no tienes una cuenta, crea una primero.</p>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/15Q7BZg_8HCJcKQnCDqhXvoRJXQ4RNjCq/view?usp=sharing" alt="Página de inicio de Bitbucket">
+                        <h3>Crear cuenta en Bitbucket</h3>
+                        <p>Si no tienes una cuenta, regístrate en <a href="https://bitbucket.org" target="_blank">bitbucket.org</a>. Es gratis y te permite crear repositorios privados ilimitados.</p>
+                        <div class="note">
+                            <p><strong>Nota:</strong> Puedes registrarte con tu correo de Google, Microsoft o Apple para mayor facilidad.</p>
                         </div>
                     </div>
                 </div>
@@ -278,16 +296,19 @@
                 <!-- Paso 2 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="fas fa-book"></i>
                     </div>
                     <div class="step-content">
                         <h3>Crear un nuevo repositorio</h3>
-                        <p>Haz clic en el botón "Create" en el menú lateral y selecciona "Repository".</p>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1WCcTXt9b4t-S3dqqYG3xT8Sy39kyB5m2/view?usp=sharing" alt="Menú de creación de repositorio">
+                        <p>Una vez dentro de Bitbucket, haz clic en el botón "Create" y selecciona "Repository".</p>
+                        <div class="code">
+                            <div>Workspace: <strong>group-composers</strong></div>
+                            <div>Nombre del repositorio: <strong>composers</strong></div>
+                            <div>Descripción: <em>Proyecto web del equipo COMPOSER</em></div>
+                            <div>Tipo: <strong>Privado</strong> (recomendado para trabajo en equipo)</div>
                         </div>
-                        <div class="note">
-                            <p><strong>Nota:</strong> Asegúrate de estar en el workspace correcto donde quieres crear el repositorio.</p>
+                        <div class="warning">
+                            <p><strong>Importante:</strong> No marques la opción "Include a README" si ya tienes archivos locales para subir.</p>
                         </div>
                     </div>
                 </div>
@@ -295,19 +316,15 @@
                 <!-- Paso 3 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Configurar el repositorio</h3>
-                        <p>Completa la información requerida:</p>
-                        <ul>
-                            <li><strong>Nombre del repositorio:</strong> composers (o el nombre que prefieras)</li>
-                            <li><strong>Descripción:</strong> Descripción opcional de tu proyecto</li>
-                            <li><strong>Workspace:</strong> group-composers</li>
-                            <li><strong>Control de acceso:</strong> Público o Privado</li>
-                        </ul>
-                        <div class="screenshot">
-                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACoCAMAAABt9SM9AAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO8GxYgAAb0jQ/cAAAAASUVORK5CYII=" alt="Formulario de configuración del repositorio">
+                        <h3>Agregar colaboradores</h3>
+                        <p>En la configuración del repositorio, ve a "User and group access" y agrega a los miembros de tu equipo.</p>
+                        <div class="code">
+                            <div>1. Busca por nombre de usuario o email</div>
+                            <div>2. Asigna permisos: <strong>Write</strong> (pueden subir cambios) o <strong>Admin</strong> (control total)</div>
+                            <div>3. Confirma la invitación</div>
                         </div>
                     </div>
                 </div>
@@ -315,16 +332,15 @@
                 <!-- Paso 4 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-download"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Agregar colaboradores</h3>
-                        <p>En la configuración del repositorio, agrega a los miembros de tu equipo con los permisos adecuados.</p>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1Q7pUt_iblD-gX1OguhSwoUkzixIMm8z-/view?usp=sharing" alt="Sección de gestión de usuarios">
-                        </div>
-                        <div class="warning">
-                            <p><strong>Importante:</strong> Asegúrate de asignar los permisos correctos (Lectura, Escritura o Administración).</p>
+                        <h3>Instalar Git en tu computadora</h3>
+                        <p>Descarga Git desde <a href="https://git-scm.com/" target="_blank">git-scm.com</a> e instálalo siguiendo las instrucciones para tu sistema operativo.</p>
+                        <div class="code">
+                            <div>Windows: Descarga el instalador ejecutable</div>
+                            <div>macOS: Usa Homebrew (<code>brew install git</code>) o descarga directa</div>
+                            <div>Linux: <code>sudo apt install git</code> (Ubuntu/Debian)</div>
                         </div>
                     </div>
                 </div>
@@ -332,18 +348,17 @@
                 <!-- Paso 5 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-terminal"></i>
+                        <i class="fas fa-cog"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Inicializar Git localmente</h3>
-                        <p>Abre tu terminal y navega a la carpeta de tu proyecto. Luego ejecuta:</p>
+                        <h3>Configurar Git por primera vez</h3>
+                        <p>Abre tu terminal (Linux/macOS) o Git Bash (Windows) y configura tu información:</p>
                         <div class="code">
-                            git init<br>
-                            git add .<br>
-                            git commit -m "Initial commit"
+                            <i class="fas fa-chevron-right"></i> git config --global user.name "Tu Nombre"<br>
+                            <i class="fas fa-chevron-right"></i> git config --global user.email "tu.email@ejemplo.com"
                         </div>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1SbT2uQojQ1uPJyJQc7FGyis2sCb_hW80/view?usp=sharing" alt="Terminal mostrando los comandos git">
+                        <div class="note">
+                            <p><strong>Nota:</strong> Usa el mismo email que registraste en Bitbucket para que se vinculen correctamente tus commits.</p>
                         </div>
                     </div>
                 </div>
@@ -351,19 +366,27 @@
                 <!-- Paso 6 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-link"></i>
+                        <i class="fas fa-folder-open"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Conectar con el repositorio remoto</h3>
-                        <p>Agrega el repositorio de Bitbucket como origen remoto:</p>
-                        <div class="code">
-                            git remote add origin https://bitbucket.org/group-composers/composers.git
-                        </div>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1qrFiA4yrWjsvKdPUgm8mwcasR3VK5dGb/view?usp=sharing" alt="Comando remote add">
-                        </div>
-                        <div class="note">
-                            <p><strong>Nota:</strong> Asegúrate de usar la URL correcta de tu repositorio.</p>
+                        <h3>Preparar tu proyecto local</h3>
+                        <p>Organiza tus archivos en una carpeta con la siguiente estructura recomendada:</p>
+                        <div class="file-structure">
+                            <div class="folder">composers-project
+                                <div class="file">index.html</div>
+                                <div class="file">index1.html</div>
+                                <div class="file">index2.html</div>
+                                <div class="file">index3.html</div>
+                                <div class="file">index4.html</div>
+                                <div class="folder">images
+                                    <div class="file">foto1.jpg</div>
+                                    <div class="file">foto2.jpg</div>
+                                    <div class="file">foto3.jpg</div>
+                                </div>
+                                <div class="folder">css
+                                    <div class="file">styles.css</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -371,19 +394,19 @@
                 <!-- Paso 7 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                        <i class="fas fa-terminal"></i>
                     </div>
                     <div class="step-content">
-                        <h3>Subir el código a Bitbucket</h3>
-                        <p>Ejecuta el comando para subir tu código al repositorio remoto:</p>
+                        <h3>Inicializar Git en tu proyecto</h3>
+                        <p>Abre la terminal, navega a tu carpeta del proyecto y ejecuta:</p>
                         <div class="code">
-                            git push -u origin main
+                            <i class="fas fa-chevron-right"></i> cd /ruta/a/tu/proyecto<br>
+                            <i class="fas fa-chevron-right"></i> git init<br>
+                            <i class="fas fa-chevron-right"></i> git add .<br>
+                            <i class="fas fa-chevron-right"></i> git commit -m "Primer commit: versión inicial del proyecto"
                         </div>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1kEiCJMewOSdcn-6on-nftkndxOVI7uFh/view?usp=sharing" alt="Comando push exitoso">
-                        </div>
-                        <div class="success">
-                            <p><strong>¡Éxito!</strong> Tu código ahora está en Bitbucket y disponible para tu equipo.</p>
+                        <div class="note">
+                            <p><strong>Nota:</strong> El comando <code>git add .</code> agrega todos los archivos. Si quieres agregar específicos, usa <code>git add nombre_archivo</code>.</p>
                         </div>
                     </div>
                 </div>
@@ -391,13 +414,53 @@
                 <!-- Paso 8 -->
                 <div class="step">
                     <div class="step-icon">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Conectar con el repositorio remoto</h3>
+                        <p>Conecta tu repositorio local con el que creaste en Bitbucket:</p>
+                        <div class="code">
+                            <i class="fas fa-chevron-right"></i> git remote add origin https://bitbucket.org/group-composers/composers.git
+                        </div>
+                        <div class="warning">
+                            <p><strong>Importante:</strong> Asegúrate de usar la URL correcta de tu repositorio. Puedes encontrarla en la página principal de tu repositorio en Bitbucket.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 9 -->
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Subir tu código a Bitbucket</h3>
+                        <p>Ejecuta el comando para subir tu código al repositorio remoto:</p>
+                        <div class="code">
+                            <i class="fas fa-chevron-right"></i> git push -u origin main
+                        </div>
+                        <div class="note">
+                            <p><strong>Nota:</strong> Si usas una versión antigua de Git, la rama por defecto podría llamarse "master" en lugar de "main".</p>
+                        </div>
+                        <div class="success">
+                            <p><strong>¡Éxito!</strong> Si todo va bien, verás un mensaje confirmando que tu código se ha subido correctamente.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 10 -->
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-check-double"></i>
                     </div>
                     <div class="step-content">
                         <h3>Verificar en Bitbucket</h3>
                         <p>Visita tu repositorio en Bitbucket para confirmar que todos los archivos se hayan subido correctamente.</p>
-                        <div class="screenshot">
-                            <img src="https://drive.google.com/file/d/1KaX3R5RfFOJBe4QL7h79e5eh-lXSsFoK/view?usp=sharing" alt="Repositorio con los archivos subidos">
+                        <p>Deberías ver:</p>
+                        <div class="code">
+                            <div>- Todos tus archivos listados</div>
+                            <div>- El commit que hiciste con el mensaje "Primer commit"</div>
+                            <div>- La rama main/master con todo tu código</div>
                         </div>
                     </div>
                 </div>
@@ -407,30 +470,16 @@
                 <button class="btn" onclick="window.print()">
                     <i class="fas fa-print"></i> Imprimir Guía
                 </button>
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-download"></i> Descargar PDF
-                </a>
+                <button class="btn" onclick="location.reload()">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
             </div>
         </div>
         
         <footer>
-            <p>&copy; 2023 COMPOSER Team - Infografía para Bitbucket</p>
-            <p>Basado en las imágenes proporcionadas del proceso de subida del proyecto</p>
+            <p>&copy; 2025 COMPOSER Team - Guía Completa de Bitbucket y Git</p>
+            <p>Para más ayuda, visita la <a href="https://support.atlassian.com/bitbucket-cloud/" style="color: #fff;">documentación oficial de Bitbucket</a></p>
         </footer>
     </div>
-
-    <script>
-        // Script para funcionalidad adicional
-        document.addEventListener('DOMContentLoaded', function() {
-            // Aquí se puede agregar interactividad si es necesaria
-            console.log('Infografía de Bitbucket cargada correctamente');
-            
-            // Simular funcionalidad de descarga PDF
-            document.querySelector('.btn-outline').addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('En una implementación real, esto descargaría un PDF de la infografía.');
-            });
-        });
-    </script>
 </body>
 </html>
