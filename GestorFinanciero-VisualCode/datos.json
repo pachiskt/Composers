@@ -1,0 +1,14 @@
+[
+    {
+        "monto": 20.0,
+        "categoria": "comida",
+        "fecha": "2025-09-10",
+        "descripcion": "pizza"
+    },
+    {
+        "monto": 20.0,
+        "categoria": "comida",
+        "fecha": "2025-09-10",
+        "descripcion": "pizza"
+    }
+]
