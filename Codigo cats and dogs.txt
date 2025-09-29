@@ -1,0 +1,108 @@
+# En Google Colab - versión optimizada
+!pip install kagglehub -q
+!pip install tensorflow -q
+
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
+import kagglehub
+from google.colab import files
+import cv2
+
+# Verificar si tenemos GPU
+print("GPU disponible:", tf.config.list_physical_devices('GPU'))
+
+# Descargar dataset
+print("Descargando dataset de Kaggle...")
+path = kagglehub.dataset_download("samuelcortinhas/cats-and-dogs-image-classification")
+print(f"Dataset descargado en: {path}")
+
+# Configuración
+IMG_SIZE = (150, 150)
+BATCH_SIZE = 32
+EPOCHS = 10
+
+# Data generators con aumento de datos
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True,
+    validation_split=0.2
+)
+
+train_generator = train_datagen.flow_from_directory(
+    path + "/train",
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode='binary',
+    subset='training'
+)
+
+validation_generator = train_datagen.flow_from_directory(
+    path + "/train",
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode='binary',
+    subset='validation'
+)
+
+# Modelo CNN
+model = keras.Sequential([
+    keras.layers.Conv2D(32, 3, activation='relu', input_shape=(150, 150, 3)),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(64, 3, activation='relu'),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(128, 3, activation='relu'),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Flatten(),
+    keras.layers.Dense(256, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='adam', 
+              loss='binary_crossentropy', 
+              metrics=['accuracy'])
+
+# Entrenar con GPU (mucho más rápido en Colab)
+history = model.fit(
+    train_generator,
+    epochs=EPOCHS,
+    validation_data=validation_generator
+)
+
+# Guardar modelo
+model.save('cats_dogs_model.h5')
+
+# Función para subir y predecir imágenes
+def upload_and_predict():
+    """Sube una imagen y hace la predicción"""
+    uploaded = files.upload()
+    
+    for filename in uploaded.keys():
+        # Preprocesar imagen
+        img = keras.preprocessing.image.load_img(filename, target_size=IMG_SIZE)
+        img_array = keras.preprocessing.image.img_to_array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+        
+        # Predecir
+        prediction = model.predict(img_array)[0][0]
+        
+        # Mostrar resultado
+        plt.figure(figsize=(8, 6))
+        plt.imshow(img)
+        plt.axis('off')
+        
+        if prediction > 0.5:
+            plt.title(f'🐶 PERRO - Confianza: {prediction:.2%}')
+        else:
+            plt.title(f'🐱 GATO - Confianza: {(1-prediction):.2%}')
+        
+        plt.show()
+
+# Probar con una imagen que subas
+print("¡Modelo entrenado! Sube una imagen para probar:")
+upload_and_predict()
