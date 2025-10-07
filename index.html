@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía Futurista - Práctica Calificada</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #00d4ff;
+            --accent: #ff4d8d;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+            --light: #f0f8ff;
+            --card-bg: rgba(30, 30, 60, 0.7);
+            --glow: 0 0 15px rgba(108, 99, 255, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(108, 99, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 77, 141, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Encabezado */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glow);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+            animation: float 15s infinite linear;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        /* Secciones */
+        .section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glow);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            font-size: 1.8rem;
+        }
+        
+        /* Integrantes */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .team-member {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.2));
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .team-member:hover {
+            transform: translateY(-8px);
+        }
+        
+        .team-member h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        /* Ejercicios */
+        .exercise {
+            background: rgba(30, 30, 60, 0.5);
+            border-left: 5px solid var(--accent);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .exercise::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 77, 141, 0.05), transparent);
+            z-index: -1;
+        }
+        
+        .exercise h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .exercise-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .info-item {
+            background: rgba(108, 99, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .code-container {
+            background: rgba(10, 10, 20, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            position: relative;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.3);
+        }
+        
+        .code-title {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .copy-btn {
+            background: rgba(108, 99, 255, 0.3);
+            color: var(--light);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(108, 99, 255, 0.5);
+        }
+        
+        pre {
+            color: #a9b7c6;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .keyword {
+            color: #cc7832;
+        }
+        
+        .string {
+            color: #6a8759;
+        }
+        
+        .comment {
+            color: #808080;
+        }
+        
+        .function {
+            color: #ffc66d;
+        }
+        
+        /* Pilares POO */
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .pillar {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.2));
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pillar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .pillar:hover {
+            transform: translateY(-8px);
+        }
+        
+        .pillar-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .pillar h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        /* Conclusiones */
+        .conclusion {
+            background: linear-gradient(135deg, rgba(255, 77, 141, 0.1), rgba(108, 99, 255, 0.1));
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .conclusion-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .conclusion-item::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        
+        /* Referencias */
+        .references {
+            background: rgba(30, 30, 60, 0.5);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .references ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .references li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .references li::before {
+            content: '◈';
+            color: var(--secondary);
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Animaciones */
+        @keyframes float {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(108, 99, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .team-grid, .pillars {
+                grid-template-columns: 1fr;
+            }
+            
+            .exercise-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado -->
+        <header class="header pulse">
+            <h1><i class="fas fa-laptop-code"></i> Práctica Calificada de Construcción de Software</h1>
+            <p>Consolidado 1 - Grupo "Composers"</p>
+            <p><i class="fas fa-user-graduate"></i> Docente: Hugo Espetia Huamanga</p>
+            <p><i class="fas fa-map-marker-alt"></i> Cusco - Perú 2025</p>
+        </header>
+        
+        <!-- Integrantes -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-users"></i> Integrantes del Grupo</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Huaychi Sencia José Natividad</h3>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Zavala Huacarpuma Juan Aldair</h3>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Tejada Taco Francys Rudi</h3>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Chalico Ccohuanqui Samir Junior</h3>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Lizarraga Aliaga Alexis Joaquin</h3>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Introducción -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> Introducción</h2>
+            <p>La programación orientada a objetos (POO) es un paradigma fundamental en el desarrollo de software moderno. En esta práctica calificada se implementan tres ejercicios que demuestran los conceptos principales de POO:</p>
+            <div class="pillars">
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Encapsulamiento</h3>
+                    <p>Ocultar los detalles internos de implementación</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Abstracción</h3>
+                    <p>Representar características esenciales sin incluir detalles</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-project-diagram"></i></div>
+                    <h3>Herencia</h3>
+                    <p>Mecanismo para crear nuevas clases basadas en clases existentes</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3>Polimorfismo</h3>
+                    <p>Capacidad de objetos de diferentes clases de responder al mismo mensaje</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Objetivos -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-bullseye"></i> Objetivos</h2>
+            <div class="exercise">
+                <h3><i class="fas fa-flag"></i> Objetivo General</h3>
+                <p>Implementar aplicaciones utilizando los principios de la Programación Orientada a Objetos en Java y Python usando el editor de código Google Colab.</p>
+            </div>
+            <div class="exercise">
+                <h3><i class="fas fa-tasks"></i> Objetivos Específicos</h3>
+                <ul>
+                    <li class="conclusion-item">Crear clases con atributos y métodos que modelan entidades del mundo real</li>
+                    <li class="conclusion-item">Implementar constructores y métodos de acceso (getters/setters)</li>
+                    <li class="conclusion-item">Aplicar el concepto de herencia entre clases</li>
+                    <li class="conclusion-item">Desarrollar programas interactivos que soliciten datos por consola</li>
+                    <li class="conclusion-item">Realizar cálculos y validaciones dentro de los métodos de las clases</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Ejercicios -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-code"></i> Desarrollo de Ejercicios</h2>
+            
+            <!-- Ejercicio 1 -->
+            <div class="exercise">
+                <h3><i class="fas fa-globe-americas"></i> Ejercicio 1: Clase Planeta</h3>
+                <div class="exercise-info">
+                    <div class="info-item"><i class="fas fa-star"></i> Puntuación: 6 puntos</div>
+                    <div class="info-item"><i class="fas fa-code"></i> Tecnología: Python + Tkinter</div>
+                </div>
+                <p><strong>Descripción:</strong> Implementación de una clase que modela planetas del sistema solar con cálculos de densidad y determinación de si son planetas exteriores o interiores.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">Código - Clase Planeta</div>
+                        <button class="copy-btn" onclick="copyCode('code1')"><i class="fas fa-copy"></i> Copiar</button>
+                    </div>
+                    <pre id="code1"><code>import tkinter as tk
+from tkinter import ttk, messagebox
+
+class TipoPlaneta:
+    def __init__(self, id_planeta: int, tipo_planeta: str):
+        self.id_planeta = id_planeta
+        self.tipo_planeta = tipo_planeta
+
+    def __str__(self):
+        return self.tipo_planeta
+
+class Planeta:
+    def __init__(self, nombre, satelites, masa, volumen, diametro, distancia_sol, tipo_planeta):
+        self.nombre = nombre
+        self.satelites = satelites
+        self.masa = masa
+        self.volumen = volumen
+        self.diametro = diametro
+        self.distancia_sol = distancia_sol
+        self.tipo_planeta = tipo_planeta
+
+    def calcular_densidad(self):
+        if self.volumen == 0:
+            return 0
+        return self.masa / self.volumen
+
+    def es_planeta_exterior(self):
+        UA = self.distancia_sol * 1_000_000 / 149_597_870
+        return UA > 3.4
+
+    def mostrar_info(self):
+        info = f"Nombre: {self.nombre}\nSatélites: {self.satelites}\nMasa: {self.masa:.2e} kg\n"
+        info += f"Volumen: {self.volumen:.2e} km³\nDiámetro: {self.diametro} km\n"
+        info += f"Distancia al Sol: {self.distancia_sol} millones de km\n"
+        info += f"Tipo: {self.tipo_planeta}\nDensidad: {self.calcular_densidad():.2e} kg/km³\n"
+        
+        if self.es_planeta_exterior():
+            info += "Este planeta es EXTERIOR al sistema solar.\n"
+        else:
+            info += "Este planeta es INTERIOR al sistema solar.\n"
+        return info</code></pre>
+                </div>
+            </div>
+            
+            <!-- Ejercicio 2 -->
+            <div class="exercise">
+                <h3><i class="fas fa-car"></i> Ejercicio 2: Clase Automóvil</h3>
+                <div class="exercise-info">
+                    <div class="info-item"><i class="fas fa-star"></i> Puntuación: 6 puntos</div>
+                    <div class="info-item"><i class="fas fa-code"></i> Tecnología: Python</div>
+                </div>
+                <p><strong>Descripción:</strong> Implementación de una clase que modela automóviles con diferentes características y funcionalidades.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">Código - Clase Automóvil</div>
+                        <button class="copy-btn" onclick="copyCode('code2')"><i class="fas fa-copy"></i> Copiar</button>
+                    </div>
+                    <pre id="code2"><code>class Automovil:
+    def __init__(self, marca, modelo, motor, tipo_combustible, tipo_automovil,
+                 numero_puertas, cantidad_asientos, velocidad_maxima, color, velocidad_actual):
+        self.marca = marca
+        self.modelo = modelo
+        self.motor = motor
+        self.tipo_combustible = tipo_combustible
+        self.tipo_automovil = tipo_automovil
+        self.numero_puertas = numero_puertas
+        self.cantidad_asientos = cantidad_asientos
+        self.velocidad_maxima = velocidad_maxima
+        self.color = color
+        self.velocidad_actual = velocidad_actual
+
+    def get_marca(self):
+        return self.marca
+
+    def set_marca(self, marca):
+        self.marca = marca
+
+    # ... más getters y setters para cada atributo
+
+    def calcular_tiempo_llegada(self, distancia_km):
+        if self.velocidad_actual == 0:
+            return float('inf')
+        tiempo_horas = distancia_km / self.velocidad_actual
+        return tiempo_horas
+
+    def mostrar_atributos(self):
+        print("\n--- Ficha del Automóvil ---")
+        print(f"Marca: {self.marca}")
+        print(f"Modelo (año): {self.modelo}")
+        print(f"Motor (cilindraje en L): {self.motor}")
+        print(f"Tipo de Combustible: {self.tipo_combustible}")
+        print(f"Tipo de Automóvil: {self.tipo_automovil}")
+        print(f"Número de Puertas: {self.numero_puertas}")
+        print(f"Cantidad de Asientos: {self.cantidad_asientos}")
+        print(f"Velocidad Máxima: {self.velocidad_maxima} km/h")
+        print(f"Color: {self.color}")
+        print(f"Velocidad Actual: {self.velocidad_actual} km/h")
+        print("---\n")</code></pre>
+                </div>
+            </div>
+            
+            <!-- Ejercicio 3 -->
+            <div class="exercise">
+                <h3><i class="fas fa-university"></i> Ejercicio 3: Clase Cuenta Bancaria (Herencia)</h3>
+                <div class="exercise-info">
+                    <div class="info-item"><i class="fas fa-star"></i> Puntuación: 8 puntos</div>
+                    <div class="info-item"><i class="fas fa-code"></i> Tecnología: Java</div>
+                </div>
+                <p><strong>Descripción:</strong> Implementación de un sistema bancario con herencia, incluyendo cuentas de ahorros y cuentas corrientes.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">Código - Sistema Bancario (Java)</div>
+                        <button class="copy-btn" onclick="copyCode('code3')"><i class="fas fa-copy"></i> Copiar</button>
+                    </div>
+                    <pre id="code3"><code>// Clase base CuentaBancaria
+public class CuentaBancaria {
+    protected double saldo;
+    protected double tasaInteresAnual;
+    protected int transacciones;
+    
+    public CuentaBancaria(double saldoInicial, double tasaInteres) {
+        this.saldo = saldoInicial;
+        this.tasaInteresAnual = tasaInteres;
+        this.transacciones = 0;
+    }
+    
+    public void depositar(double monto) {
+        if (monto > 0) {
+            saldo += monto;
+            transacciones++;
+            System.out.println("✓ Depósito exitoso: $" + String.format("%.2f", monto));
+        }
+    }
+    
+    public void retirar(double monto) {
+        if (monto > 0 && monto <= saldo) {
+            saldo -= monto;
+            transacciones++;
+            System.out.println("✓ Retiro exitoso: $" + String.format("%.2f", monto));
+        } else {
+            System.out.println("✗ Error: Fondos insuficientes");
+        }
+    }
+    
+    public void calcularInteresMensual() {
+        double interesMensual = saldo * (tasaInteresAnual / 100) / 12;
+        saldo += interesMensual;
+        System.out.println("✓ Interés mensual: $" + String.format("%.2f", interesMensual));
+    }
+    
+    // Getters y otros métodos...
+}
+
+// Clase hija CuentaAhorros
+public class CuentaAhorros extends CuentaBancaria {
+    private boolean activa;
+    
+    public CuentaAhorros(double saldoInicial, double tasaInteres) {
+        super(saldoInicial, tasaInteres);
+        this.activa = saldoInicial >= 10000;
+    }
+    
+    @Override
+    public void retirar(double monto) {
+        if (activa) {
+            super.retirar(monto);
+            // Verificar si la cuenta se desactiva después del retiro
+            if (saldo < 10000) {
+                activa = false;
+                System.out.println("✗ Cuenta DESACTIVADA (Saldo < $10,000)");
+            }
+        } else {
+            System.out.println("✗ Error: Cuenta inactiva. No se puede retirar.");
+        }
+    }
+    
+    @Override
+    public void depositar(double monto) {
+        super.depositar(monto);
+        // Verificar si la cuenta se activa después del depósito
+        if (!activa && saldo >= 10000) {
+            activa = true;
+            System.out.println("🎉 ¡Cuenta ACTIVADA! (Saldo ≥ $10,000)");
+        }
+    }
+    
+    // Otros métodos específicos de CuentaAhorros...
+}</code></pre>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Conclusiones -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-check-circle"></i> Conclusiones</h2>
+            <div class="conclusion">
+                <p>Con esta práctica pudimos implementar exitosamente los tres ejercicios aplicando los principios de POO:</p>
+                <div class="conclusion-item">
+                    <strong>Ejercicio 1 (Planeta):</strong> Demostró encapsulamiento y abstracción mediante la modelación de planetas con cálculos científicos integrados.
+                </div>
+                <div class="conclusion-item">
+                    <strong>Ejercicio 2 (Automóvil):</strong> Mostró el uso de clases auxiliares, getters/setters y métodos de cálculo específicos del dominio.
+                </div>
+                <div class="conclusion-item">
+                    <strong>Ejercicio 3 (Sistema Bancario):</strong> Aplicó herencia y polimorfismo creando una jerarquía de cuentas bancarias con comportamientos diferenciados.
+                </div>
+                <p style="margin-top: 15px;">Los programas desarrollados cumplen con todos los requisitos solicitados, incluyendo interfaces interactivas, validaciones de datos y cálculos específicos para cada dominio problemático.</p>
+            </div>
+        </section>
+        
+        <!-- Referencias -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-book"></i> Referencias Bibliográficas</h2>
+            <div class="references">
+                <ul>
+                    <li>DEITEL, P. y DEITEL, H., 2017. Java: How to Program. Pearson.</li>
+                    <li>ECKEL, B., 2006. Thinking in Java. Prentice Hall.</li>
+                    <li>PYTHON SOFTWARE FOUNDATION. Tkinter — Python interface to Tel/Tk [en línea]. Disponible en: https://docs.python.org/3/library/tkinter.html</li>
+                    <li>ORACLE. Java Platform SE 8 Documentation [en línea]. Disponible en: https://docs.oracle.com/javase/8/docs/api/</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Función para copiar código al portapapeles
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const textArea = document.createElement('textarea');
+            textArea.value = codeElement.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Mostrar mensaje de confirmación
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+            }, 2000);
+        }
+        
+        // Efecto de partículas de fondo (simulado con CSS)
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 25px rgba(108, 99, 255, 0.3)';
+                });
+                
+                section.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--glow)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

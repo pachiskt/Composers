@@ -1,0 +1,372 @@
+class CuentaBancaria:
+    def __init__(self, saldo: float, tasa_anual: float):
+        self.saldo = saldo
+        self.num_depositos = 0
+        self.num_retiros = 0
+        self.tasa_anual = tasa_anual
+        self.comision_mensual = 0.0
+    
+    def depositar(self, cantidad: float):
+        if cantidad <= 0:
+            print("✗ Error: La cantidad debe ser positiva")
+            return False
+        
+        # Validar que no exceda límites razonables
+        if cantidad > 1000000:  # Límite de $1,000,000 por depósito
+            print("✗ Error: El depósito no puede exceder $1,000,000")
+            return False
+        
+        self.saldo += cantidad
+        self.num_depositos += 1
+        print(f"✓ Depósito exitoso: ${cantidad:.2f}")
+        print(f"  Saldo actual: ${self.saldo:.2f}")
+        return True
+    
+    def retirar(self, cantidad: float):
+        if cantidad <= 0:
+            print("✗ Error: La cantidad debe ser positiva")
+            return False
+        
+        # Validar que no exceda límites razonables
+        if cantidad > 500000:  # Límite de $500,000 por retiro
+            print("✗ Error: El retiro no puede exceder $500,000")
+            return False
+        
+        return True
+    
+    def calcular_interes_mensual(self):
+        if self.saldo > 0:
+            interes_mensual = (self.tasa_anual / 12) / 100
+            interes = self.saldo * interes_mensual
+            self.saldo += interes
+            print(f"✓ Interés mensual: ${interes:.2f}")
+            return interes
+        return 0
+    
+    def extracto_mensual(self):
+        # Aplicar comisión mensual
+        if self.comision_mensual > 0:
+            self.saldo -= self.comision_mensual
+            print(f"✓ Comisión mensual aplicada: ${self.comision_mensual:.2f}")
+        # Calcular interés
+        self.calcular_interes_mensual()
+    
+    def imprimir(self):
+        print(f"Saldo: ${self.saldo:.2f}")
+        print(f"Depósitos: {self.num_depositos}")
+        print(f"Retiros: {self.num_retiros}")
+        print(f"Tasa anual: {self.tasa_anual}%")
+        print(f"Comisión mensual: ${self.comision_mensual:.2f}")
+
+
+class CuentaAhorros(CuentaBancaria):
+    def __init__(self, saldo: float, tasa_anual: float):
+        super().__init__(saldo, tasa_anual)
+        self.activa = saldo >= 10000
+        self.comision_mensual = 0.0
+    
+    def depositar(self, cantidad: float):
+        # En Cuenta de Ahorros SI se permiten depósitos incluso estando inactiva
+        # porque pueden activar la cuenta
+        
+        # Validar que el saldo resultante no sea excesivo
+        saldo_futuro = self.saldo + cantidad
+        if saldo_futuro > 50000000:  # Límite de $50,000,000
+            print("✗ Error: El saldo no puede exceder $50,000,000")
+            return False
+        
+        estado_anterior = self.activa
+        
+        if super().depositar(cantidad):
+            # Verificar si se activa la cuenta después del depósito
+            self.activa = self.saldo >= 10000
+            
+            if not estado_anterior and self.activa:
+                print("🎉 ¡Cuenta ACTIVADA! (Saldo ≥ $10,000)")
+            elif estado_anterior and not self.activa:
+                print("⚠ Cuenta DESACTIVADA (Saldo < $10,000)")
+                
+            return True
+        return False
+    
+    def retirar(self, cantidad: float):
+        # En Cuenta de Ahorros NO se permiten retiros estando inactiva
+        if not self.activa:
+            print("✗ Cuenta INACTIVA - No se permiten retiros")
+            print("  Para activar la cuenta, el saldo debe ser ≥ $10,000")
+            return False
+        
+        # Validar que no genere saldo negativo
+        if cantidad > self.saldo:
+            print("✗ Fondos insuficientes")
+            print(f"  Saldo disponible: ${self.saldo:.2f}")
+            return False
+        
+        estado_anterior = self.activa
+        
+        if super().retirar(cantidad):
+            self.saldo -= cantidad
+            self.num_retiros += 1
+            print(f"✓ Retiro exitoso: ${cantidad:.2f}")
+            print(f"  Saldo actual: ${self.saldo:.2f}")
+            
+            # Verificar si se mantiene activa después del retiro
+            self.activa = self.saldo >= 10000
+            
+            if estado_anterior and not self.activa:
+                print("⚠ Cuenta ahora está INACTIVA (saldo < $10,000)")
+            return True
+        return False
+    
+    def extracto_mensual(self):
+        # Comisión por exceso de retiros (más de 3 retiros)
+        if self.num_retiros > 3:
+            comision_extra = (self.num_retiros - 3) * 1000
+            self.comision_mensual += comision_extra
+            print(f"⚠ Comisión por exceso de retiros: ${comision_extra:.2f}")
+        
+        super().extracto_mensual()
+        
+        # Validar que no haya saldo negativo después de comisiones
+        if self.saldo < 0:
+            print("⚠ Ajuste: El saldo no puede ser negativo, se establece en $0.00")
+            self.saldo = 0
+        
+        # Actualizar estado de la cuenta
+        estado_anterior = self.activa
+        self.activa = self.saldo >= 10000
+        
+        if not estado_anterior and self.activa:
+            print("🎉 ¡Cuenta ACTIVADA por interés/comisiones! (Saldo ≥ $10,000)")
+        elif estado_anterior and not self.activa:
+            print("⚠ Cuenta DESACTIVADA por interés/comisiones (Saldo < $10,000)")
+    
+    def imprimir(self):
+        print("\n" + "="*50)
+        print("CUENTA DE AHORROS")
+        print("="*50)
+        print(f"Saldo: ${self.saldo:.2f}")
+        print(f"Comisión mensual: ${self.comision_mensual:.2f}")
+        print(f"Total transacciones: {self.num_depositos + self.num_retiros}")
+        print(f"Estado: {'ACTIVA' if self.activa else 'INACTIVA'}")
+        print(f"Condición: {'Saldo ≥ $10,000' if self.activa else 'Saldo < $10,000'}")
+
+
+class CuentaCorriente(CuentaBancaria):
+    def __init__(self, saldo: float, tasa_anual: float):
+        super().__init__(saldo, tasa_anual)
+        self.sobregiro = 0.0
+        self.comision_mensual = 10000  # Comisión fija mensual
+    
+    def retirar(self, cantidad: float):
+        if cantidad <= 0:
+            print("✗ Error: La cantidad debe ser positiva")
+            return False
+        
+        # Validar límite de retiro
+        if cantidad > 500000:
+            print("✗ Error: El retiro no puede exceder $500,000")
+            return False
+        
+        # Validar límite total (saldo + sobregiro disponible)
+        limite_total = self.saldo + 100000  # $100,000 de sobregiro máximo
+        if cantidad > limite_total:
+            print("✗ Error: Excede el límite disponible")
+            print(f"  Límite total: ${limite_total:.2f}")
+            return False
+        
+        if cantidad > self.saldo:
+            # Calcular sobregiro
+            self.sobregiro = cantidad - self.saldo
+            self.saldo = 0
+            self.num_retiros += 1
+            print(f"✓ Retiro con SOBREGIRRO: ${cantidad:.2f}")
+            print(f"  Sobregiro utilizado: ${self.sobregiro:.2f}")
+            print(f"  Saldo actual: $0.00")
+            return True
+        else:
+            self.saldo -= cantidad
+            self.num_retiros += 1
+            print(f"✓ Retiro exitoso: ${cantidad:.2f}")
+            print(f"  Saldo actual: ${self.saldo:.2f}")
+            return True
+    
+    def depositar(self, cantidad: float):
+        if cantidad <= 0:
+            print("✗ Error: La cantidad debe ser positiva")
+            return False
+        
+        # Validar límite de depósito
+        if cantidad > 1000000:
+            print("✗ Error: El depósito no puede exceder $1,000,000")
+            return False
+        
+        if cantidad > 0:
+            if self.sobregiro > 0:
+                # Primero cubrir el sobregiro
+                if cantidad <= self.sobregiro:
+                    self.sobregiro -= cantidad
+                    print(f"✓ Depósito aplicado al SOBREGIRRO: ${cantidad:.2f}")
+                    print(f"  Sobregiro restante: ${self.sobregiro:.2f}")
+                else:
+                    # Cubrir sobregiro y el resto al saldo
+                    excedente = cantidad - self.sobregiro
+                    self.saldo += excedente
+                    self.sobregiro = 0
+                    print(f"✓ Depósito exitoso: ${cantidad:.2f}")
+                    print(f"  Sobregiro cubierto, saldo actual: ${self.saldo:.2f}")
+            else:
+                self.saldo += cantidad
+                print(f"✓ Depósito exitoso: ${cantidad:.2f}")
+                print(f"  Saldo actual: ${self.saldo:.2f}")
+            
+            self.num_depositos += 1
+            return True
+        else:
+            print("✗ Error: La cantidad debe ser positiva")
+            return False
+    
+    def extracto_mensual(self):
+        super().extracto_mensual()
+        
+        # Validar que no haya saldo negativo excesivo después de comisiones
+        if self.saldo < -100000:  # Límite de sobregiro
+            print("⚠ Ajuste: Sobregiro excede límite, se establece en -$100,000")
+            self.saldo = -100000
+        
+        print(f"  Saldo final: ${self.saldo:.2f}")
+    
+    def imprimir(self):
+        print("\n" + "="*50)
+        print("CUENTA CORRIENTE")
+        print("="*50)
+        print(f"Saldo: ${self.saldo:.2f}")
+        print(f"Comisión mensual: ${self.comision_mensual:.2f}")
+        print(f"Total transacciones: {self.num_depositos + self.num_retiros}")
+        print(f"Sobregiro: ${self.sobregiro:.2f}")
+        if self.saldo < 0:
+            print("⚠ CUENTA EN SOBREGIRRO")
+
+
+def obtener_numero_valido(mensaje, min_val=0.01, max_val=100000000):
+    """Valida que la entrada sea un número válido"""
+    while True:
+        try:
+            valor = float(input(mensaje))
+            if valor < min_val:
+                print(f"✗ Error: El valor debe ser mayor o igual a ${min_val:.2f}")
+            elif valor > max_val:
+                print(f"✗ Error: El valor no puede exceder ${max_val:.2f}")
+            else:
+                return valor
+        except ValueError:
+            print("✗ Error: Por favor ingrese un número válido")
+
+
+def main_cuenta_ahorros():
+    print("\n" + "★"*50)
+    print("CREACIÓN DE CUENTA DE AHORROS")
+    print("★"*50)
+    
+    # Solicitar datos con validación
+    saldo_inicial = obtener_numero_valido("Ingrese el saldo inicial: $")
+    tasa_interes = obtener_numero_valido("Ingrese la tasa de interés anual (%): ", 0, 100)
+    
+    # Crear cuenta
+    cuenta = CuentaAhorros(saldo_inicial, tasa_interes)
+    
+    # Mostrar estado inicial
+    print(f"\nEstado inicial: {'ACTIVA' if cuenta.activa else 'INACTIVA'}")
+    print(f"Saldo inicial: ${cuenta.saldo:.2f}")
+    
+    # Operaciones
+    print("\n--- OPERACIONES ---")
+    
+    # Depósito
+    monto_deposito = obtener_numero_valido("Monto a depositar: $")
+    cuenta.depositar(monto_deposito)
+    
+    # Retiro
+    monto_retiro = obtener_numero_valido("Monto a retirar: $")
+    cuenta.retirar(monto_retiro)
+    
+    # Extracto mensual
+    print("\n--- EXTRACTO MENSUAL ---")
+    cuenta.extracto_mensual()
+    
+    # Resultados finales
+    cuenta.imprimir()
+
+
+def main_cuenta_corriente():
+    print("\n" + "★"*50)
+    print("CREACIÓN DE CUENTA CORRIENTE")
+    print("★"*50)
+    
+    # Solicitar datos con validación
+    saldo_inicial = obtener_numero_valido("Ingrese el saldo inicial: $")
+    tasa_interes = obtener_numero_valido("Ingrese la tasa de interés anual (%): ", 0, 100)
+    
+    # Crear cuenta
+    cuenta = CuentaCorriente(saldo_inicial, tasa_interes)
+    
+    # Mostrar estado inicial
+    print(f"\nSaldo inicial: ${cuenta.saldo:.2f}")
+    
+    # Operaciones
+    print("\n--- OPERACIONES ---")
+    
+    # Depósito
+    monto_deposito = obtener_numero_valido("Monto a depositar: $")
+    cuenta.depositar(monto_deposito)
+    
+    # Retiro (posible sobregiro)
+    monto_retiro = obtener_numero_valido("Monto a retirar: $")
+    cuenta.retirar(monto_retiro)
+    
+    # Extracto mensual
+    print("\n--- EXTRACTO MENSUAL ---")
+    cuenta.extracto_mensual()
+    
+    # Resultados finales
+    cuenta.imprimir()
+
+
+def menu_principal():
+    """Menú principal con bucle"""
+    while True:
+        print("\n" + "🏦"*50)
+        print("           SISTEMA BANCARIO - EJERCICIO 3")
+        print("🏦"*50)
+        print("\nSeleccione una opción:")
+        print("1. Probar Cuenta de Ahorros")
+        print("2. Probar Cuenta Corriente")
+        print("3. Probar Ambas Cuentas")
+        print("4. Salir")
+        
+        opcion = input("\nIngrese su opción (1-4): ").strip()
+        
+        if opcion == "1":
+            main_cuenta_ahorros()
+        elif opcion == "2":
+            main_cuenta_corriente()
+        elif opcion == "3":
+            main_cuenta_ahorros()
+            main_cuenta_corriente()
+        elif opcion == "4":
+            print("\n¡Gracias por usar el Sistema Bancario! 👋")
+            break
+        else:
+            print("✗ Opción inválida. Por favor ingrese 1, 2, 3 o 4.")
+        
+        # Preguntar si desea continuar (excepto cuando eligió Salir)
+        if opcion != "4":
+            continuar = input("\n¿Desea realizar otra operación? (s/n): ").strip().lower()
+            if continuar not in ['s', 'si', 'sí', 'y', 'yes']:
+                print("\n¡Gracias por usar el Sistema Bancario! 👋")
+                break
+
+
+# Programa principal
+if __name__ == "__main__":
+    menu_principal()
