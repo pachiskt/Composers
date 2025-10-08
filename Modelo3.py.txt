@@ -1,0 +1,383 @@
+# %% [markdown]
+# # MODELO 3: PERCEPTRÓN CON CARACTERÍSTICAS DIFERENTES - COMPLETO CON GRÁFICOS
+# 
+# **Parámetros:** Learning Rate = 0.05, 1500 épocas
+# **Énfasis:** Impacto de la selección de features
+
+# %%
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from google.colab import files
+import io
+
+print("=== MODELO 3: PERCEPTRÓN CON CARACTERÍSTICAS DIFERENTES - COMPLETO ===")
+
+# %%
+# Subir el archivo
+print("Por favor, sube el archivo 'heart.csv'")
+uploaded = files.upload()
+
+# Cargar dataset
+filename = list(uploaded.keys())[0]
+df = pd.read_csv(io.BytesIO(uploaded[filename]))
+print(f"✅ Dataset cargado: {df.shape[0]} muestras, {df.shape[1]} características")
+
+# %%
+class PerceptronDifferentFeatures:
+    def __init__(self, learning_rate=0.05, n_epochs=1500):
+        self.learning_rate = learning_rate
+        self.n_epochs = n_epochs
+        self.weights = None
+        self.bias = None
+        self.errors = []
+        self.accuracy_history = []
+    
+    def activation_function(self, x):
+        return 1 if x >= 0 else 0
+    
+    def predict(self, X):
+        predictions = []
+        for i in range(len(X)):
+            linear_output = np.dot(X[i], self.weights) + self.bias
+            predictions.append(self.activation_function(linear_output))
+        return np.array(predictions)
+    
+    def evaluate(self, X, y):
+        predictions = self.predict(X)
+        accuracy = np.mean(predictions == y)
+        return accuracy, predictions
+    
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        
+        # MEJOR INICIALIZACIÓN
+        self.weights = np.random.normal(0, 0.1, n_features)
+        self.bias = 0.3
+        
+        print("🔄 Iniciando entrenamiento...")
+        print(f"📊 Configuración: LR={self.learning_rate}, Épocas={self.n_epochs}")
+        
+        for epoch in range(self.n_epochs):
+            total_error = 0
+            correct_predictions = 0
+            
+            # Mezclar datos
+            indices = np.random.permutation(n_samples)
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
+            
+            for i in range(n_samples):
+                linear_output = np.dot(X_shuffled[i], self.weights) + self.bias
+                prediction = self.activation_function(linear_output)
+                error = y_shuffled[i] - prediction
+                
+                if error != 0:
+                    self.weights += self.learning_rate * error * X_shuffled[i]
+                    self.bias += self.learning_rate * error
+                    total_error += abs(error)
+                
+                if prediction == y_shuffled[i]:
+                    correct_predictions += 1
+            
+            epoch_error = total_error / n_samples
+            epoch_accuracy = correct_predictions / n_samples
+            
+            self.errors.append(epoch_error)
+            self.accuracy_history.append(epoch_accuracy)
+            
+            if (epoch + 1) % 250 == 0:
+                print(f"📍 Época {epoch + 1}: Error = {epoch_error:.4f}, Accuracy = {epoch_accuracy:.4f}")
+
+# %%
+# Preprocesamiento MEJORADO con características más relevantes
+from sklearn.preprocessing import StandardScaler
+
+# CARACTERÍSTICAS MÁS RELEVANTES
+base_features = ['age', 'sex', 'cp', 'trestbps', 'chol', 'thalach', 'oldpeak', 'ca']
+print(f"🎯 Características base utilizadas: {base_features}")
+
+# Crear características base
+X_base = df[base_features].values
+
+# MEJORES transformaciones
+X_transformed = np.column_stack([
+    X_base[:, 0],                       # age
+    X_base[:, 1],                       # sex  
+    X_base[:, 2],                       # cp
+    X_base[:, 3],                       # trestbps
+    X_base[:, 4],                       # chol
+    X_base[:, 5],                       # thalach
+    X_base[:, 6],                       # oldpeak
+    X_base[:, 7],                       # ca
+    X_base[:, 0] / 50.0,               # age normalized
+    (X_base[:, 4] - 200) / 50.0,       # chol centered and scaled
+    X_base[:, 6] * 2,                  # oldpeak amplified
+    np.where(X_base[:, 7] > 0, 1, 0),  # ca binary
+])
+
+feature_names = base_features + ['age_norm', 'chol_centered', 'oldpeak_amp', 'ca_binary']
+
+# Estandarizar características
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_transformed)
+
+y = df['target'].values
+
+print(f"🔧 Características transformadas: {len(feature_names)} total")
+
+# Dividir datos (80% train, 20% test)
+np.random.seed(42)
+indices = np.random.permutation(len(X_scaled))
+train_size = int(0.8 * len(X_scaled))
+
+X_train = X_scaled[indices[:train_size]]
+X_test = X_scaled[indices[train_size:]]
+y_train = y[indices[:train_size]]
+y_test = y[indices[train_size:]]
+
+print(f"📊 División de datos: {len(X_train)} entrenamiento, {len(X_test)} test")
+
+# %%
+# Entrenar modelo MEJORADO
+print("\n" + "="*60)
+print("🚀 ENTRENAMIENTO DEL MODELO 3 - MEJORADO")
+print("="*60)
+
+model3 = PerceptronDifferentFeatures(learning_rate=0.05, n_epochs=1500)
+model3.fit(X_train, y_train)
+
+# %%
+# EVALUACIÓN Y MÉTRICAS
+print("\n" + "="*60)
+print("📈 EVALUACIÓN EN CONJUNTO DE PRUEBA")
+print("="*60)
+
+# Realizar predicciones
+accuracy, predictions = model3.evaluate(X_test, y_test)
+
+# Calcular métricas manualmente
+tp = fp = tn = fn = 0
+for true, pred in zip(y_test, predictions):
+    if true == 1 and pred == 1: tp += 1
+    elif true == 0 and pred == 1: fp += 1
+    elif true == 0 and pred == 0: tn += 1
+    elif true == 1 and pred == 0: fn += 1
+
+# Calcular todas las métricas
+accuracy = (tp + tn) / (tp + tn + fp + fn)
+precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+classification_error = 1 - accuracy
+
+print(f"✅ **Precisión (Accuracy):** {accuracy:.4f}")
+print(f"📊 **Error de Clasificación:** {classification_error:.4f}")
+print(f"🎯 **Precision:** {precision:.4f}")
+print(f"📈 **Recall:** {recall:.4f}")
+print(f"⭐ **F1-Score:** {f1_score:.4f}")
+
+print(f"\n🔍 **Matriz de Confusión:**")
+print(f"           Predicción 0  Predicción 1")
+print(f"Realidad 0     {tn:2d}           {fp:2d}")
+print(f"Realidad 1     {fn:2d}           {tp:2d}")
+
+# %%
+# PREDICCIÓN CON NUEVOS DATOS
+print("\n" + "="*60)
+print("🔮 PREDICCIÓN CON NUEVOS DATOS")
+print("="*60)
+print("Ingrese los datos del paciente para predecir riesgo cardíaco:")
+
+try:
+    print("\n--- DATOS DEL PACIENTE ---")
+    age = float(input("• Edad (años): "))
+    sex = float(input("• Sexo (1 = masculino, 0 = femenino): "))
+    cp = float(input("• Tipo de dolor de pecho (0-3): "))
+    trestbps = float(input("• Presión arterial en reposo (mm Hg): "))
+    chol = float(input("• Colesterol (mg/dl): "))
+    thalach = float(input("• Frecuencia cardíaca máxima: "))
+    oldpeak = float(input("• Depresión ST inducida por ejercicio: "))
+    ca = float(input("• Número de vasos principales coloreados (0-3): "))
+    
+    # Crear array con los datos base
+    base_data = np.array([[age, sex, cp, trestbps, chol, thalach, oldpeak, ca]])
+    
+    # Aplicar transformaciones
+    transformed_data = np.column_stack([
+        base_data[:, 0], age / 50.0,
+        (chol - 200) / 50.0, oldpeak * 2,
+        np.where(ca > 0, 1, 0)
+    ])
+    
+    # Preprocesar los nuevos datos
+    new_data_scaled = scaler.transform(transformed_data)
+    
+    # Realizar predicción
+    prediction = model3.predict(new_data_scaled)[0]
+    probability = np.dot(new_data_scaled[0], model3.weights) + model3.bias
+    
+    print(f"\n" + "="*50)
+    print("🎯 RESULTADO DE LA PREDICCIÓN")
+    print("="*50)
+    print(f"Puntuación del modelo: {probability:.4f}")
+    
+    if prediction == 1:
+        print("🔴 **PREDICCIÓN: ALTO RIESGO DE ENFERMEDAD CARDÍACA**")
+    else:
+        print("🟢 **PREDICCIÓN: BAJO RIESGO DE ENFERMEDAD CARDÍACA**")
+    
+except Exception as e:
+    print(f"❌ Error: {e}")
+    print("Por favor, ingrese valores numéricos válidos")
+
+# %%
+# GRÁFICOS COMPLETOS DEL MODELO 3
+print("\n" + "="*60)
+print("📊 GRÁFICOS COMPLETOS - MODELO 3")
+print("="*60)
+
+# Crear figura con múltiples subplots
+fig = plt.figure(figsize=(20, 16))
+
+# Gráfico 1: Evolución del entrenamiento
+ax1 = plt.subplot(2, 3, 1)
+ax1.plot(model3.errors, 'r-', linewidth=2, label='Error de entrenamiento')
+ax1.plot(model3.accuracy_history, 'g-', linewidth=2, label='Accuracy de entrenamiento')
+ax1.set_title('Evolución del Entrenamiento\nModelo 3 - Características Diferentes', fontsize=14, fontweight='bold')
+ax1.set_xlabel('Época')
+ax1.set_ylabel('Valor')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+ax1.set_ylim(0, 1)
+
+# Gráfico 2: Matriz de confusión
+ax2 = plt.subplot(2, 3, 2)
+conf_matrix = np.array([[tn, fp], [fn, tp]])
+im = ax2.imshow(conf_matrix, cmap='Purples', interpolation='nearest', aspect='auto')
+for i in range(2):
+    for j in range(2):
+        ax2.text(j, i, f'{conf_matrix[i, j]}', 
+                ha='center', va='center', 
+                color='white' if conf_matrix[i, j] > conf_matrix.max()/2 else 'black',
+                fontsize=16, fontweight='bold')
+ax2.set_xticks([0, 1])
+ax2.set_yticks([0, 1])
+ax2.set_xticklabels(['Pred 0\n(No Enf.)', 'Pred 1\n(Enf.)'])
+ax2.set_yticklabels(['True 0\n(No Enf.)', 'True 1\n(Enf.)'])
+ax2.set_title('Matriz de Confusión\nModelo 3', fontsize=14, fontweight='bold')
+plt.colorbar(im, ax=ax2, label='Cantidad de Muestras')
+
+# Gráfico 3: Métricas de evaluación
+ax3 = plt.subplot(2, 3, 3)
+metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'Error']
+metrics_values = [accuracy, precision, recall, f1_score, classification_error]
+colors = ['#2E8B57', '#FFA500', '#FF6347', '#9370DB', '#DC143C']
+
+bars = ax3.bar(metrics_names, metrics_values, color=colors, alpha=0.8, edgecolor='black')
+ax3.set_title('Métricas de Evaluación\nModelo 3', fontsize=14, fontweight='bold')
+ax3.set_ylabel('Valor')
+ax3.set_ylim(0, 1)
+for bar, value in zip(bars, metrics_values):
+    height = bar.get_height()
+    ax3.text(bar.get_x() + bar.get_width()/2, height + 0.01, 
+             f'{value:.3f}', ha='center', va='bottom', fontweight='bold')
+
+# Gráfico 4: Importancia de características (pesos absolutos)
+ax4 = plt.subplot(2, 3, 4)
+feature_importance = np.abs(model3.weights)
+colors_weights = ['#FF6B6B' if x < 0 else '#4ECDC4' for x in model3.weights]
+
+# Agrupar características por tipo
+base_features_idx = list(range(8))
+transformed_features_idx = list(range(8, len(feature_names)))
+colors_grouped = ['#4ECDC4'] * 8 + ['#FF6B6B'] * 4
+
+bars_weights = ax4.barh(range(len(feature_names)), feature_importance, color=colors_grouped, alpha=0.7)
+ax4.set_title('Importancia de Características\nModelo 3', fontsize=14, fontweight='bold')
+ax4.set_xlabel('Magnitud del Peso (Valor Absoluto)')
+ax4.set_yticks(range(len(feature_names)))
+ax4.set_yticklabels(feature_names, fontsize=9)
+
+# Añadir leyenda para tipos de características
+ax4.text(0.02, 0.98, 'Características Base', transform=ax4.transAxes, 
+         color='#4ECDC4', fontweight='bold', fontsize=10, va='top')
+ax4.text(0.02, 0.93, 'Características Transformadas', transform=ax4.transAxes, 
+         color='#FF6B6B', fontweight='bold', fontsize=10, va='top')
+
+# Gráfico 5: Comparación características base vs transformadas
+ax5 = plt.subplot(2, 3, 5)
+base_weights_avg = np.mean(np.abs(model3.weights[:8]))
+transformed_weights_avg = np.mean(np.abs(model3.weights[8:]))
+
+categories = ['Características\nBase', 'Características\nTransformadas']
+values = [base_weights_avg, transformed_weights_avg]
+colors_comp = ['#4ECDC4', '#FF6B6B']
+
+bars_comp = ax5.bar(categories, values, color=colors_comp, alpha=0.8, edgecolor='black')
+ax5.set_title('Promedio de Importancia\nBase vs Transformadas', fontsize=14, fontweight='bold')
+ax5.set_ylabel('Magnitud Promedio del Peso')
+for bar, value in zip(bars_comp, values):
+    height = bar.get_height()
+    ax5.text(bar.get_x() + bar.get_width()/2, height + 0.001, 
+             f'{value:.3f}', ha='center', va='bottom', fontweight='bold')
+
+# Gráfico 6: Distribución de contribuciones
+ax6 = plt.subplot(2, 3, 6)
+contributions = model3.weights * np.mean(np.abs(X_train), axis=0)
+positive_contrib = contributions[contributions > 0]
+negative_contrib = contributions[contributions < 0]
+
+labels = ['Contribuciones\nPositivas', 'Contribuciones\nNegativas']
+counts = [len(positive_contrib), len(negative_contrib)]
+colors_pie = ['#4ECDC4', '#FF6B6B']
+
+wedges, texts, autotexts = ax6.pie(counts, labels=labels, colors=colors_pie, autopct='%1.1f%%',
+                                  startangle=90)
+for autotext in autotexts:
+    autotext.set_color('white')
+    autotext.set_fontweight('bold')
+ax6.set_title('Distribución de Contribuciones\nen la Clasificación', fontsize=14, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# ANÁLISIS FINAL DEL MODELO 3
+print("\n" + "="*60)
+print("📋 ANÁLISIS FINAL - MODELO 3")
+print("="*60)
+
+print("🎯 **CARACTERÍSTICAS DEL MODELO 3:**")
+print(f"  • Learning Rate: 0.05")
+print(f"  • Épocas de entrenamiento: 1500")
+print(f"  • Total de características: {len(feature_names)}")
+print(f"  • Características base: 8")
+print(f"  • Características transformadas: 4")
+print(f"  • Error final de entrenamiento: {model3.errors[-1]:.4f}")
+print(f"  • Accuracy final de entrenamiento: {model3.accuracy_history[-1]:.4f}")
+
+print(f"\n📊 **RENDIMIENTO EN PRUEBA:**")
+print(f"  • Accuracy: {accuracy:.4f}")
+print(f"  • Error de clasificación: {classification_error:.4f}")
+print(f"  • Precision: {precision:.4f}")
+print(f"  • Recall: {recall:.4f}")
+print(f"  • F1-Score: {f1_score:.4f}")
+
+# Análisis de características
+base_importance = np.mean(np.abs(model3.weights[:8]))
+transformed_importance = np.mean(np.abs(model3.weights[8:]))
+
+print(f"\n🔍 **ANÁLISIS DE CARACTERÍSTICAS:**")
+print(f"  • Importancia promedio características base: {base_importance:.4f}")
+print(f"  • Importancia promedio características transformadas: {transformed_importance:.4f}")
+
+if transformed_importance > base_importance:
+    print("  - ✅ Las características transformadas son más importantes")
+else:
+    print("  - ⚠️  Las características base son más importantes")
+
+print(f"\n💡 **IMPACTO DE LA SELECCIÓN DE FEATURES:**")
+print("  - Modelo utiliza combinación de características base y transformadas")
+print("  - Características transformadas capturan relaciones no lineales")
+print("  - Enfoque en ingeniería de características para mejorar rendimiento")

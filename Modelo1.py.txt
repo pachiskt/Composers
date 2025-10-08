@@ -1,0 +1,288 @@
+# %% [markdown]
+# # MODELO 1: PERCEPTRÓN BÁSICO
+# 
+# **Parámetros:** Learning Rate = 0.01, 1000 épocas
+# **Énfasis:** Implementación directa del algoritmo
+
+# %%
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from google.colab import files
+import io
+
+print("=== MODELO 1: PERCEPTRÓN BÁSICO (LR=0.01) ===")
+
+# %%
+# Subir el archivo
+print("Por favor, sube el archivo 'heart.csv'")
+uploaded = files.upload()
+
+# Cargar dataset
+filename = list(uploaded.keys())[0]
+df = pd.read_csv(io.BytesIO(uploaded[filename]))
+print(f"✅ Dataset cargado: {df.shape[0]} muestras, {df.shape[1]} características")
+
+# Mostrar información del dataset
+print("\n📊 Información del dataset:")
+print(f"Distribución de clases: {df['target'].value_counts().to_dict()}")
+print("0 = No enfermedad, 1 = Enfermedad")
+
+# %%
+class PerceptronBasic:
+    def __init__(self, learning_rate=0.01, n_epochs=1000):
+        self.learning_rate = learning_rate
+        self.n_epochs = n_epochs
+        self.weights = None
+        self.bias = None
+        self.errors = []
+        self.accuracy_history = []
+    
+    def activation_function(self, x):
+        return 1 if x >= 0 else 0
+    
+    def predict(self, X):
+        predictions = []
+        for i in range(len(X)):
+            linear_output = np.dot(X[i], self.weights) + self.bias
+            predictions.append(self.activation_function(linear_output))
+        return np.array(predictions)
+    
+    def evaluate(self, X, y):
+        predictions = self.predict(X)
+        accuracy = np.mean(predictions == y)
+        return accuracy, predictions
+    
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        self.weights = np.random.normal(0, 0.01, n_features)
+        self.bias = 0
+        
+        print("🔄 Iniciando entrenamiento...")
+        for epoch in range(self.n_epochs):
+            total_error = 0
+            correct_predictions = 0
+            
+            # Mezclar datos
+            indices = np.random.permutation(n_samples)
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
+            
+            for i in range(n_samples):
+                linear_output = np.dot(X_shuffled[i], self.weights) + self.bias
+                prediction = self.activation_function(linear_output)
+                error = y_shuffled[i] - prediction
+                
+                if error != 0:
+                    self.weights += self.learning_rate * error * X_shuffled[i]
+                    self.bias += self.learning_rate * error
+                    total_error += abs(error)
+                
+                if prediction == y_shuffled[i]:
+                    correct_predictions += 1
+            
+            epoch_error = total_error / n_samples
+            epoch_accuracy = correct_predictions / n_samples
+            
+            self.errors.append(epoch_error)
+            self.accuracy_history.append(epoch_accuracy)
+            
+            if (epoch + 1) % 200 == 0:
+                print(f"📍 Época {epoch + 1}: Error = {epoch_error:.4f}, Accuracy = {epoch_accuracy:.4f}")
+
+# %%
+# Preprocesamiento de datos
+from sklearn.preprocessing import StandardScaler
+
+# Seleccionar características
+selected_features = ['age', 'cp', 'thalach', 'oldpeak', 'ca']
+print(f"🎯 Características utilizadas: {selected_features}")
+
+X = df[selected_features].values
+y = df['target'].values
+
+# Estandarizar características
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Dividir datos (80% train, 20% test)
+np.random.seed(42)
+indices = np.random.permutation(len(X))
+train_size = int(0.8 * len(X))
+
+X_train = X_scaled[indices[:train_size]]
+X_test = X_scaled[indices[train_size:]]
+y_train = y[indices[:train_size]]
+y_test = y[indices[train_size:]]
+
+print(f"📊 División de datos: {len(X_train)} entrenamiento, {len(X_test)} test")
+
+# %%
+# Entrenar modelo
+print("\n" + "="*60)
+print("🚀 ENTRENAMIENTO DEL MODELO 1 - PERCEPTRÓN BÁSICO")
+print("="*60)
+
+model1 = PerceptronBasic(learning_rate=0.01, n_epochs=1000)
+model1.fit(X_train, y_train)
+
+# %%
+# EVALUACIÓN Y MÉTRICAS
+print("\n" + "="*60)
+print("📈 EVALUACIÓN EN CONJUNTO DE PRUEBA")
+print("="*60)
+
+# Realizar predicciones
+accuracy, predictions = model1.evaluate(X_test, y_test)
+
+# Calcular métricas manualmente
+tp = fp = tn = fn = 0
+for true, pred in zip(y_test, predictions):
+    if true == 1 and pred == 1: tp += 1
+    elif true == 0 and pred == 1: fp += 1
+    elif true == 0 and pred == 0: tn += 1
+    elif true == 1 and pred == 0: fn += 1
+
+# Calcular todas las métricas
+accuracy = (tp + tn) / (tp + tn + fp + fn)
+precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+classification_error = 1 - accuracy
+
+print(f"✅ **Precisión (Accuracy):** {accuracy:.4f}")
+print(f"📊 **Error de Clasificación:** {classification_error:.4f}")
+print(f"🎯 **Precision:** {precision:.4f}")
+print(f"📈 **Recall:** {recall:.4f}")
+print(f"⭐ **F1-Score:** {f1_score:.4f}")
+
+print(f"\n🔍 **Matriz de Confusión:**")
+print(f"           Predicción 0  Predicción 1")
+print(f"Realidad 0     {tn:2d}           {fp:2d}")
+print(f"Realidad 1     {fn:2d}           {tp:2d}")
+
+# %%
+# GRÁFICOS DE RESULTADOS
+print("\n" + "="*60)
+print("📊 GRÁFICOS DE RESULTADOS")
+print("="*60)
+
+plt.figure(figsize=(15, 5))
+
+# Gráfico 1: Evolución del error y accuracy
+plt.subplot(1, 3, 1)
+plt.plot(model1.errors, 'r-', label='Error', linewidth=2)
+plt.plot(model1.accuracy_history, 'g-', label='Accuracy', linewidth=2)
+plt.title('Evolución del Entrenamiento\nModelo 1 - Perceptrón Básico')
+plt.xlabel('Época')
+plt.ylabel('Valor')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+# Gráfico 2: Matriz de confusión
+plt.subplot(1, 3, 2)
+conf_matrix = np.array([[tn, fp], [fn, tp]])
+plt.imshow(conf_matrix, cmap='Blues', interpolation='nearest')
+for i in range(2):
+    for j in range(2):
+        plt.text(j, i, f'{conf_matrix[i, j]}', 
+                ha='center', va='center', 
+                color='white' if conf_matrix[i, j] > conf_matrix.max()/2 else 'black',
+                fontsize=14, fontweight='bold')
+plt.xticks([0, 1], ['Pred 0', 'Pred 1'])
+plt.yticks([0, 1], ['True 0', 'True 1'])
+plt.title('Matriz de Confusión\nModelo 1')
+plt.colorbar(label='Cantidad')
+
+# Gráfico 3: Métricas de evaluación
+plt.subplot(1, 3, 3)
+metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score']
+metrics_values = [accuracy, precision, recall, f1_score]
+colors = ['blue', 'green', 'orange', 'red']
+
+bars = plt.bar(metrics_names, metrics_values, color=colors, alpha=0.7)
+plt.title('Métricas de Evaluación\nModelo 1')
+plt.ylabel('Valor')
+plt.ylim(0, 1)
+for bar, value in zip(bars, metrics_values):
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+             f'{value:.3f}', ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# PREDICCIÓN CON NUEVOS DATOS
+print("\n" + "="*60)
+print("🔮 PREDICCIÓN CON NUEVOS DATOS")
+print("="*60)
+print("Ingrese los datos del paciente para predecir riesgo cardíaco:")
+
+try:
+    print("\n--- DATOS DEL PACIENTE ---")
+    age = float(input("• Edad (años): "))
+    cp = float(input("• Tipo de dolor de pecho (0-3):\n  0: Angina típica\n  1: Angina atípica  \n  2: Dolor no anginal\n  3: Asintomático\n  Ingrese valor (0-3): "))
+    thalach = float(input("• Frecuencia cardíaca máxima: "))
+    oldpeak = float(input("• Depresión ST inducida por ejercicio: "))
+    ca = float(input("• Número de vasos principales coloreados (0-3): "))
+    
+    # Crear array con los datos ingresados
+    new_data = np.array([[age, cp, thalach, oldpeak, ca]])
+    
+    # Preprocesar los nuevos datos
+    new_data_scaled = scaler.transform(new_data)
+    
+    # Realizar predicción
+    prediction = model1.predict(new_data_scaled)[0]
+    probability = np.dot(new_data_scaled[0], model1.weights) + model1.bias
+    
+    print(f"\n" + "="*50)
+    print("🎯 RESULTADO DE LA PREDICCIÓN")
+    print("="*50)
+    print(f"Puntuación del modelo: {probability:.4f}")
+    
+    if prediction == 1:
+        print("🔴 **PREDICCIÓN: ALTO RIESGO DE ENFERMEDAD CARDÍACA**")
+        print("   💡 Recomendación: Consultar urgentemente con cardiólogo")
+    else:
+        print("🟢 **PREDICCIÓN: BAJO RIESGO DE ENFERMEDAD CARDÍACA**")
+        print("   💡 Recomendación: Continuar con controles regulares")
+    
+    print(f"\n📋 Interpretación:")
+    print(f"  - Puntuación > 0: Predicción de enfermedad (1)")
+    print(f"  - Puntuación < 0: Predicción de no enfermedad (0)")
+    print(f"  - Umbral de decisión: 0")
+    
+except Exception as e:
+    print(f"❌ Error: {e}")
+    print("Por favor, ingrese valores numéricos válidos")
+
+# %%
+# RESUMEN FINAL
+print("\n" + "="*60)
+print("📋 RESUMEN MODELO 1 - PERCEPTRÓN BÁSICO")
+print("="*60)
+
+print("⚙️ **Configuración del modelo:**")
+print(f"  • Learning Rate: 0.01")
+print(f"  • Épocas de entrenamiento: 1000")
+print(f"  • Función de activación: Escalón unitario")
+print(f"  • Características utilizadas: {len(selected_features)}")
+
+print(f"\n📊 **Características y pesos finales:**")
+for i, (feature, weight) in enumerate(zip(selected_features, model1.weights)):
+    print(f"  {i+1:2d}. {feature:15}: {weight:8.4f}")
+print(f"  Bias (intercept): {model1.bias:8.4f}")
+
+print(f"\n🎯 **Rendimiento final en prueba:**")
+print(f"  • Precisión (Accuracy): {accuracy:.4f}")
+print(f"  • Error de Clasificación: {classification_error:.4f}")
+print(f"  • Precision: {precision:.4f}")
+print(f"  • Recall: {recall:.4f}")
+print(f"  • F1-Score: {f1_score:.4f}")
+
+print(f"\n💡 **Análisis del Modelo 1:**")
+print("  - Implementación directa del algoritmo Perceptrón")
+print("  - Tasa de aprendizaje constante (0.01)")
+print("  - Entrenamiento estable pero posiblemente lento")
+print("  - Buen punto de referencia para comparación")

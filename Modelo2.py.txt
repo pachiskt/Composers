@@ -1,0 +1,224 @@
+# %% [markdown]
+# # MODELO 2: PERCEPTRÓN CON DECAIMIENTO DE LR - CORREGIDO
+# 
+# **Parámetros:** Learning Rate = 0.1 inicial + decaimiento, 1500 épocas
+# **Énfasis:** Impacto de la tasa de aprendizaje
+
+# %%
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from google.colab import files
+import io
+
+print("=== MODELO 2: PERCEPTRÓN CON DECAIMIENTO (LR=0.1 + decay) - CORREGIDO ===")
+
+# %%
+# Subir el archivo
+print("Por favor, sube el archivo 'heart.csv'")
+uploaded = files.upload()
+
+# Cargar dataset
+filename = list(uploaded.keys())[0]
+df = pd.read_csv(io.BytesIO(uploaded[filename]))
+print(f"✅ Dataset cargado: {df.shape[0]} muestras, {df.shape[1]} características")
+
+# %%
+class PerceptronWithDecay:
+    def __init__(self, learning_rate=0.1, n_epochs=1500, decay_rate=0.005):
+        self.learning_rate = learning_rate
+        self.n_epochs = n_epochs
+        self.decay_rate = decay_rate
+        self.weights = None
+        self.bias = None
+        self.errors = []
+        self.accuracy_history = []
+        self.learning_rates_history = []
+    
+    def activation_function(self, x):
+        return 1 if x >= 0 else 0
+    
+    def predict(self, X):
+        predictions = []
+        for i in range(len(X)):
+            linear_output = np.dot(X[i], self.weights) + self.bias
+            predictions.append(self.activation_function(linear_output))
+        return np.array(predictions)
+    
+    def evaluate(self, X, y):
+        predictions = self.predict(X)
+        accuracy = np.mean(predictions == y)
+        return accuracy, predictions
+    
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        
+        # MEJOR INICIALIZACIÓN: pesos más grandes y bias positivo inicial
+        self.weights = np.random.normal(0, 0.1, n_features)  # Aumentada desviación
+        self.bias = 0.5  # Bias inicial positivo
+        
+        print("🔄 Iniciando entrenamiento con decaimiento de LR...")
+        print(f"📊 Configuración: LR inicial={self.learning_rate}, Épocas={self.n_epochs}")
+        
+        for epoch in range(self.n_epochs):
+            # Aplicar decaimiento más suave
+            current_lr = self.learning_rate * np.exp(-self.decay_rate * epoch)
+            
+            total_error = 0
+            correct_predictions = 0
+            
+            # Mezclar datos
+            indices = np.random.permutation(n_samples)
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
+            
+            for i in range(n_samples):
+                linear_output = np.dot(X_shuffled[i], self.weights) + self.bias
+                prediction = self.activation_function(linear_output)
+                error = y_shuffled[i] - prediction
+                
+                if error != 0:
+                    self.weights += current_lr * error * X_shuffled[i]
+                    self.bias += current_lr * error
+                    total_error += abs(error)
+                
+                if prediction == y_shuffled[i]:
+                    correct_predictions += 1
+            
+            epoch_error = total_error / n_samples
+            epoch_accuracy = correct_predictions / n_samples
+            
+            self.errors.append(epoch_error)
+            self.accuracy_history.append(epoch_accuracy)
+            self.learning_rates_history.append(current_lr)
+            
+            if (epoch + 1) % 250 == 0:
+                print(f"📍 Época {epoch + 1}: Error = {epoch_error:.4f}, Accuracy = {epoch_accuracy:.4f}, LR = {current_lr:.6f}")
+
+# %%
+# Preprocesamiento de datos MEJORADO
+from sklearn.preprocessing import StandardScaler
+
+# MEJOR selección de características - más relevantes para enfermedad cardíaca
+selected_features = ['age', 'cp', 'trestbps', 'chol', 'thalach', 'oldpeak', 'ca']
+print(f"🎯 Características utilizadas (MEJORADAS): {selected_features}")
+
+X = df[selected_features].values
+y = df['target'].values
+
+# Estandarizar características
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Dividir datos (80% train, 20% test)
+np.random.seed(42)
+indices = np.random.permutation(len(X))
+train_size = int(0.8 * len(X))
+
+X_train = X_scaled[indices[:train_size]]
+X_test = X_scaled[indices[train_size:]]
+y_train = y[indices[:train_size]]
+y_test = y[indices[train_size:]]
+
+print(f"📊 División de datos: {len(X_train)} entrenamiento, {len(X_test)} test")
+
+# %%
+# Entrenar modelo MEJORADO
+print("\n" + "="*60)
+print("🚀 ENTRENAMIENTO DEL MODELO 2 - MEJORADO")
+print("="*60)
+
+model2 = PerceptronWithDecay(learning_rate=0.1, n_epochs=1500, decay_rate=0.005)
+model2.fit(X_train, y_train)
+
+# %%
+# EVALUACIÓN Y MÉTRICAS
+print("\n" + "="*60)
+print("📈 EVALUACIÓN EN CONJUNTO DE PRUEBA")
+print("="*60)
+
+# Realizar predicciones
+accuracy, predictions = model2.evaluate(X_test, y_test)
+
+# Calcular métricas manualmente
+tp = fp = tn = fn = 0
+for true, pred in zip(y_test, predictions):
+    if true == 1 and pred == 1: tp += 1
+    elif true == 0 and pred == 1: fp += 1
+    elif true == 0 and pred == 0: tn += 1
+    elif true == 1 and pred == 0: fn += 1
+
+# Calcular todas las métricas
+accuracy = (tp + tn) / (tp + tn + fp + fn)
+precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+classification_error = 1 - accuracy
+
+print(f"✅ **Precisión (Accuracy):** {accuracy:.4f}")
+print(f"📊 **Error de Clasificación:** {classification_error:.4f}")
+print(f"🎯 **Precision:** {precision:.4f}")
+print(f"📈 **Recall:** {recall:.4f}")
+print(f"⭐ **F1-Score:** {f1_score:.4f}")
+
+print(f"\n🔍 **Matriz de Confusión:**")
+print(f"           Predicción 0  Predicción 1")
+print(f"Realidad 0     {tn:2d}           {fp:2d}")
+print(f"Realidad 1     {fn:2d}           {tp:2d}")
+
+# %%
+# PREDICCIÓN CON NUEVOS DATOS - MEJORADA
+print("\n" + "="*60)
+print("🔮 PREDICCIÓN CON NUEVOS DATOS - MODELO MEJORADO")
+print("="*60)
+print("Ingrese los datos del paciente para predecir riesgo cardíaco:")
+
+try:
+    print("\n--- DATOS DEL PACIENTE ---")
+    age = float(input("• Edad (años): "))
+    cp = float(input("• Tipo de dolor de pecho (0-3):\n  0: Angina típica\n  1: Angina atípica  \n  2: Dolor no anginal\n  3: Asintomático\n  Ingrese valor (0-3): "))
+    trestbps = float(input("• Presión arterial en reposo (mm Hg): "))
+    chol = float(input("• Colesterol (mg/dl): "))
+    thalach = float(input("• Frecuencia cardíaca máxima: "))
+    oldpeak = float(input("• Depresión ST inducida por ejercicio: "))
+    ca = float(input("• Número de vasos principales coloreados (0-3): "))
+    
+    # Crear array con los datos ingresados
+    new_data = np.array([[age, cp, trestbps, chol, thalach, oldpeak, ca]])
+    
+    # Preprocesar los nuevos datos
+    new_data_scaled = scaler.transform(new_data)
+    
+    # Realizar predicción
+    prediction = model2.predict(new_data_scaled)[0]
+    probability = np.dot(new_data_scaled[0], model2.weights) + model2.bias
+    
+    print(f"\n" + "="*50)
+    print("🎯 RESULTADO DE LA PREDICCIÓN - MODELO MEJORADO")
+    print("="*50)
+    print(f"Puntuación del modelo: {probability:.4f}")
+    print(f"Umbral de decisión: 0")
+    
+    # ANÁLISIS DETALLADO DE LA PREDICCIÓN
+    print(f"\n🔍 **Análisis detallado:**")
+    print(f"  - Contribución por característica:")
+    for i, (feature, weight, value) in enumerate(zip(selected_features, model2.weights, new_data_scaled[0])):
+        contribution = weight * value
+        print(f"    {feature:15}: {contribution:7.4f} (peso: {weight:7.4f})")
+    print(f"  - Bias: {model2.bias:.4f}")
+    
+    if prediction == 1:
+        print("\n🔴 **PREDICCIÓN: ALTO RIESGO DE ENFERMEDAD CARDÍACA**")
+        print("   💡 Recomendación: Consultar urgentemente con cardiólogo")
+    else:
+        print("\n🟢 **PREDICCIÓN: BAJO RIESGO DE ENFERMEDAD CARDÍACA**")
+        print("   💡 Recomendación: Continuar con controles regulares")
+    
+    print(f"\n📋 **Interpretación de la puntuación:**")
+    print(f"  - Puntuación > 0: Predicción de enfermedad (1)")
+    print(f"  - Puntuación < 0: Predicción de no enfermedad (0)")
+    print(f"  - Magnitud indica confianza del modelo")
+    
+except Exception as e:
+    print(f"❌ Error: {e}")
+    print("Por favor, ingrese valores numéricos válidos")
