@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía - Evaluación Perceptrón</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #00d4ff;
+            --accent: #ff4d8d;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+            --light: #f0f8ff;
+            --card-bg: rgba(30, 30, 60, 0.8);
+            --glow: 0 0 20px rgba(108, 99, 255, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 77, 141, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Encabezado */
+        .header {
+            text-align: center;
+            padding: 50px 30px;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--glow);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s infinite linear;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            text-shadow: 0 0 30px rgba(108, 99, 255, 0.5);
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+        
+        /* Secciones */
+        .section {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--glow);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(108, 99, 255, 0.3);
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+        
+        .section-title i {
+            font-size: 2rem;
+        }
+        
+        /* Integrantes */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .team-member {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(0, 212, 255, 0.25));
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(108, 99, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .team-member h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .team-member .percentage {
+            color: var(--accent);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        /* Dataset */
+        .dataset-info {
+            background: linear-gradient(135deg, rgba(255, 77, 141, 0.15), rgba(108, 99, 255, 0.15));
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .dataset-info h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .dataset-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .dataset-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        /* Modelos */
+        .models-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 25px;
+        }
+        
+        .model-card {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.2));
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(108, 99, 255, 0.4);
+            transition: transform 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .model-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .model-title {
+            font-size: 1.6rem;
+            color: var(--secondary);
+        }
+        
+        .model-score {
+            background: var(--accent);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .model-params {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .param-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .param-value {
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .metric-name {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Código */
+        .code-container {
+            background: rgba(10, 10, 20, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            overflow-x: auto;
+            border: 1px solid rgba(108, 99, 255, 0.4);
+            position: relative;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.4);
+        }
+        
+        .code-title {
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+        
+        .copy-btn {
+            background: rgba(108, 99, 255, 0.4);
+            color: var(--light);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(108, 99, 255, 0.6);
+        }
+        
+        pre {
+            color: #a9b7c6;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+        
+        .keyword {
+            color: #cc7832;
+        }
+        
+        .string {
+            color: #6a8759;
+        }
+        
+        .comment {
+            color: #808080;
+        }
+        
+        .function {
+            color: #ffc66d;
+        }
+        
+        /* Comparación */
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .comparison-item {
+            background: linear-gradient(135deg, rgba(255, 77, 141, 0.15), rgba(108, 99, 255, 0.15));
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 77, 141, 0.3);
+        }
+        
+        .comparison-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--accent);
+        }
+        
+        .comparison-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Conclusiones */
+        .conclusion {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(108, 99, 255, 0.15));
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 25px;
+            border-left: 5px solid var(--success);
+        }
+        
+        .conclusion-item {
+            margin-bottom: 20px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .conclusion-item::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* Recomendaciones */
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .recommendation {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(108, 99, 255, 0.15));
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        /* Repositorio */
+        .repo-link {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.2));
+            border-radius: 20px;
+        }
+        
+        .repo-link a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .repo-link a:hover {
+            color: var(--accent);
+        }
+        
+        /* Animaciones */
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(108, 99, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+            
+            .team-grid, .models-container, .comparison, .recommendations {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-params {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado -->
+        <header class="header pulse">
+            <h1><i class="fas fa-brain"></i> Evaluación Perceptrón</h1>
+            <p>Actividad de Evaluación - Aprendizaje Supervisado</p>
+            <p><i class="fas fa-user-graduate"></i> Docente: Hugo Espetia Huamanga</p>
+            <p><i class="fas fa-users"></i> Grupo: Composers</p>
+            <p class="subtitle"><i class="fas fa-map-marker-alt"></i> Cusco - Perú 2025</p>
+        </header>
+        
+        <!-- Integrantes -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-users"></i> Integrantes del Grupo</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Challco Ccohuanqui Samir Junior</h3>
+                    <div class="percentage">100%</div>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Huaychi Sencia José Natividad</h3>
+                    <div class="percentage">100%</div>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Tejada Taco Francys Raúl</h3>
+                    <div class="percentage">100%</div>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Lizarraga Aliaga Alexis Joaquín</h3>
+                    <div class="percentage">100%</div>
+                </div>
+                <div class="team-member">
+                    <h3><i class="fas fa-user"></i> Zavala Huacarpuma Juan Aldair</h3>
+                    <div class="percentage">100%</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Introducción -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> Introducción</h2>
+            <p>Esta evaluación corresponde al desarrollo del examen parcial de la asignatura de Programación, en el cual se busca aplicar los conocimientos adquiridos sobre algoritmos de aprendizaje supervisado, específicamente el Perceptrón.</p>
+            <p>A lo largo de la actividad, el equipo seleccionó un dataset real, realizó un proceso de preparación de datos y construyó tres modelos distintos de Perceptrón, con el fin de analizar cómo cambios en la tasa de aprendizaje y en la selección de características impactan en el rendimiento del modelo.</p>
+        </section>
+        
+        <!-- Dataset -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-database"></i> Dataset Utilizado</h2>
+            <div class="dataset-info">
+                <h3><i class="fas fa-heartbeat"></i> Heart Disease Dataset</h3>
+                <p>Dataset de clasificación binaria disponible en Kaggle para predecir enfermedades cardíacas basado en características médicas.</p>
+                
+                <div class="dataset-details">
+                    <div class="dataset-item">
+                        <div class="param-value">1,025</div>
+                        <div class="metric-name">Muestras</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="param-value">14</div>
+                        <div class="metric-name">Características</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="param-value">526 / 499</div>
+                        <div class="metric-name">Distribución (1/0)</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="param-value">Binaria</div>
+                        <div class="metric-name">Clasificación</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px; color: var(--secondary);">Preprocesamiento</h3>
+            <ul style="padding-left: 20px; margin-top: 15px;">
+                <li>Revisión de tipos de datos y valores faltantes</li>
+                <li>Análisis de distribución de clases</li>
+                <li>Limpieza de datos y codificación de variables categóricas</li>
+                <li>Selección de subconjunto de características relevantes</li>
+                <li>Escalado de variables numéricas</li>
+                <li>División 80/20 entrenamiento/prueba</li>
+            </ul>
+        </section>
+        
+        <!-- Modelos -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-cogs"></i> Modelos de Perceptrón</h2>
+            
+            <div class="models-container">
+                <!-- Modelo 1 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <div class="model-title">Modelo 1</div>
+                        <div class="model-score">Básico</div>
+                    </div>
+                    <p>Perceptrón simple con tasa de aprendizaje baja y número fijo de épocas.</p>
+                    
+                    <div class="model-params">
+                        <div class="param-item">
+                            <div class="param-value">0.01</div>
+                            <div class="metric-name">Learning Rate</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-value">1,000</div>
+                            <div class="metric-name">Épocas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">79.5%</div>
+                            <div class="metric-name">Accuracy</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">79.0%</div>
+                            <div class="metric-name">F1-Score</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modelo 2 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <div class="model-title">Modelo 2</div>
+                        <div class="model-score">Modificado</div>
+                    </div>
+                    <p>Perceptrón con tasa de aprendizaje variable y decaimiento progresivo.</p>
+                    
+                    <div class="model-params">
+                        <div class="param-item">
+                            <div class="param-value">0.1 + decay</div>
+                            <div class="metric-name">Learning Rate</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-value">1,500</div>
+                            <div class="metric-name">Épocas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">76.1%</div>
+                            <div class="metric-name">Accuracy</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">79.0%</div>
+                            <div class="metric-name">F1-Score</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modelo 3 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <div class="model-title">Modelo 3</div>
+                        <div class="model-score">Características</div>
+                    </div>
+                    <p>Perceptrón con selección y transformación de características.</p>
+                    
+                    <div class="model-params">
+                        <div class="param-item">
+                            <div class="param-value">0.05</div>
+                            <div class="metric-name">Learning Rate</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-value">1,500</div>
+                            <div class="metric-name">Épocas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">74.2%</div>
+                            <div class="metric-name">Accuracy</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">76.4%</div>
+                            <div class="metric-name">F1-Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Comparación -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Comparación de Modelos</h2>
+            
+            <div class="comparison">
+                <div class="comparison-item">
+                    <div class="comparison-value">79.5%</div>
+                    <div class="comparison-label">Mejor Accuracy</div>
+                    <p>Modelo 1 - Perceptrón Básico</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-value">86.8%</div>
+                    <div class="comparison-label">Mejor Recall</div>
+                    <p>Modelo 2 - Perceptrón Modificado</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-value">84.0%</div>
+                    <div class="comparison-label">Mejor Precisión</div>
+                    <p>Modelo 1 - Perceptrón Básico</p>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px; color: var(--secondary);">Análisis Comparativo</h3>
+            <p>El Modelo 1 demostró ser el más preciso, mientras que el Modelo 2 tuvo mejor capacidad para detectar casos positivos (recall). El Modelo 3, aunque con menor accuracy, mostró la importancia de la ingeniería de características.</p>
+        </section>
+        
+        <!-- Código Ejemplo -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-code"></i> Implementación - Perceptrón Básico</h2>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Clase PerceptronBasic</div>
+                    <button class="copy-btn" onclick="copyCode('code1')"><i class="fas fa-copy"></i> Copiar</button>
+                </div>
+                <pre id="code1"><code>class PerceptronBasic:
+    def __init__(self, learning_rate=0.01, n_epochs=1000):
+        self.learning_rate = learning_rate
+        self.n_epochs = n_epochs
+        self.weights = None
+        self.bias = None
+        self.errors = []
+        self.accuracy_history = []
+
+    def activation_function(self, x):
+        return 1 if x >= 0 else 0
+
+    def predict(self, X):
+        predictions = []
+        for i in range(len(X)):
+            linear_output = np.dot(X[i], self.weights) + self.bias
+            predictions.append(self.activation_function(linear_output))
+        return np.array(predictions)
+
+    def evaluate(self, X, y):
+        predictions = self.predict(X)
+        accuracy = np.mean(predictions == y)
+        return accuracy, predictions
+
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        self.weights = np.random.normal(0, 0.01, n_features)
+        self.bias = 0
+        
+        print("Iniciando entrenamiento...")
+        for epoch in range(self.n_epochs):
+            total_error = 0
+            correct_predictions = 0
+            
+            # Mezclar datos
+            indices = np.random.permutation(n_samples)
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
+            
+            for i in range(n_samples):
+                linear_output = np.dot(X_shuffled[i], self.weights) + self.bias
+                prediction = self.activation_function(linear_output)
+                error = y_shuffled[i] - prediction
+                
+                if error != 0:
+                    self.weights += self.learning_rate * error * X_shuffled[i]
+                    self.bias += self.learning_rate * error
+                    total_error += abs(error)
+                
+                if prediction == y_shuffled[i]:
+                    correct_predictions += 1
+            
+            epoch_error = total_error / n_samples
+            epoch_accuracy = correct_predictions / n_samples
+            
+            self.errors.append(epoch_error)
+            self.accuracy_history.append(epoch_accuracy)
+            
+            if (epoch + 1) % 200 == 0:
+                print(f"Época {epoch + 1}: Error = {epoch_error:.4f}, Accuracy = {epoch_accuracy:.4f}")</code></pre>
+            </div>
+        </section>
+        
+        <!-- Conclusiones -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-check-circle"></i> Conclusiones</h2>
+            <div class="conclusion">
+                <div class="conclusion-item">
+                    El desarrollo de los tres modelos de Perceptrón permitió comprender de forma práctica cómo los parámetros del aprendizaje supervisado influyen directamente en la capacidad predictiva del modelo.
+                </div>
+                <div class="conclusion-item">
+                    El Modelo 1 (Básico) sirvió como punto de partida para observar el comportamiento estándar del algoritmo, evidenciando una precisión moderada y un aprendizaje estable pero lento.
+                </div>
+                <div class="conclusion-item">
+                    El Modelo 2 (Modificado), con una tasa de aprendizaje más alta y un decaimiento progresivo, logró una mayor velocidad de convergencia, mejorando el equilibrio entre precisión y recall.
+                </div>
+                <div class="conclusion-item">
+                    El Modelo 3 (Variación de Características) demostró que la selección de variables tiene un impacto significativo en el rendimiento, evidenciando la importancia del análisis de relevancia de características.
+                </div>
+            </div>
+        </section>
+        
+        <!-- Recomendaciones -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-lightbulb"></i> Recomendaciones</h2>
+            
+            <div class="recommendations">
+                <div class="recommendation">
+                    <h3><i class="fas fa-sliders-h"></i> Optimización</h3>
+                    <p>Evaluar más combinaciones de tasas de aprendizaje y épocas para encontrar configuraciones óptimas.</p>
+                </div>
+                
+                <div class="recommendation">
+                    <h3><i class="fas fa-project-diagram"></i> Arquitectura</h3>
+                    <p>Implementar funciones de activación no lineales o perceptrones multicapa (MLP) para conjuntos complejos.</p>
+                </div>
+                
+                <div class="recommendation">
+                    <h3><i class="fas fa-filter"></i> Características</h3>
+                    <p>Realizar selección de características más rigurosa con técnicas estadísticas o algoritmos especializados.</p>
+                </div>
+                
+                <div class="recommendation">
+                    <h3><i class="fas fa-expand-arrows-alt"></i> Datos</h3>
+                    <p>Ampliar la base de datos para mejorar la generalización del modelo y evitar sobreajuste.</p>
+                </div>
+                
+                <div class="recommendation">
+                    <h3><i class="fas fa-chart-line"></i> Métricas</h3>
+                    <p>Complementar con métricas visuales (gráficos ROC, curvas Precision-Recall) para evaluación completa.</p>
+                </div>
+                
+                <div class="recommendation">
+                    <h3><i class="fas fa-desktop"></i> Interfaz</h3>
+                    <p>Integrar interfaz gráfica o web para ingreso de datos y visualización intuitiva de resultados.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Repositorio -->
+        <section class="section">
+            <div class="repo-link">
+                <a href="https://github.com/Dachiskt/Composers/tree/parcial" target="_blank">
+                    <i class="fab fa-github"></i> Ver Repositorio en GitHub
+                </a>
+                <p style="margin-top: 15px; opacity: 0.8;">Dachiskt/Composers at parcial</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Función para copiar código al portapapeles
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const textArea = document.createElement('textarea');
+            textArea.value = codeElement.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Mostrar mensaje de confirmación
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+            }, 2000);
+        }
+        
+        // Efectos interactivos
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.model-card, .team-member');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
